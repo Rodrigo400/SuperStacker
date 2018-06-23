@@ -13,7 +13,7 @@ public class TheStack : MonoBehaviour {
 
 	private const float BOUNDS_SIZE = 3.5f;				// size of the sway
 	private const float STACK_MOVING_SPEED = 5.0f;		// how fast it moves
-	private const float ERROR_MARGIN = 0.20f;			// error threshold of tile placement
+	private const float ERROR_MARGIN = 0.18f;			// error threshold of tile placement
 	private const float STACK_BOUNDS_GAIN = 0.25f;		// incr cube bounds slowly
 	private const int COMBO_START_GAIN = 4;				// how much you need to combo before gaining size
 
