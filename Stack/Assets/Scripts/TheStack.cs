@@ -3,10 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 public class TheStack : MonoBehaviour {
 
+	public ParticleSystem starParticle;
+
+	public AudioClip placeClip;
+	public AudioClip rubbleClip;
+	public AudioClip overClip;
+
+	public AudioSource placeSource;
+	public AudioSource rubbleSource;
+	public AudioSource overSource;
+
 	public Text scoreText;
+	public Text comboText;
 	public Color32[] gameColors = new Color32[4];
 	public Material stackMat;
 	public GameObject EndPanel;
@@ -36,6 +48,11 @@ public class TheStack : MonoBehaviour {
 
 	// Use this for initialization
 	private void Start () {
+		// Audio here
+		placeSource.clip = placeClip;
+		rubbleSource.clip = rubbleClip;
+		overSource.clip = overClip;
+
 		theStack = new GameObject[transform.childCount];
 		for (int i = 0; i < transform.childCount; i++) {			// initialize stack into array
 			theStack [i] = transform.GetChild (i).gameObject;
@@ -62,10 +79,15 @@ public class TheStack : MonoBehaviour {
 		
 		if (Input.GetMouseButtonDown (0)) {						// click to spawn tile and incr score
 			if (PlaceTile ()) {
+				// Placing tile audio
+				placeSource.Play();
+
 				SpawnTile ();
 				scoreCount++;
 				scoreText.text = scoreCount.ToString ();
+				comboText.text = combo.ToString ();
 			} else {											// if you couldn't place tile, game over
+				overSource.Play();
 				EndGame ();
 			}
 		}
@@ -128,6 +150,10 @@ public class TheStack : MonoBehaviour {
 					new Vector3 (Mathf.Abs (deltaX), 1, t.localScale.z)
 				);
 				t.localPosition = new Vector3 (middle - (lastTilePosition.x / 2), scoreCount, lastTilePosition.z);
+			
+				// AUDIO SOURCE TO CUT
+				rubbleSource.Play();
+
 			} else {										// incr combo, update position, and grow bounds 
 				if (combo > COMBO_START_GAIN) {
 					stackBounds.x += STACK_BOUNDS_GAIN;
@@ -140,6 +166,10 @@ public class TheStack : MonoBehaviour {
 				}
 				combo++;
 				t.localPosition = new Vector3 (lastTilePosition.x, scoreCount, lastTilePosition.z);
+			
+				// AUDIO SOURCE COMBO
+				starParticle.Emit(1);
+
 			}
 			// condition for moving in z direction; very similar to x direction
 		} else {
@@ -163,6 +193,10 @@ public class TheStack : MonoBehaviour {
 					new Vector3 (t.localScale.x, 1, Mathf.Abs (deltaZ))
 				);
 				t.localPosition = new Vector3 (lastTilePosition.x, scoreCount, middle - (lastTilePosition.z / 2));
+			
+				// AUDIO SOURCE CUT
+				rubbleSource.Play();
+
 			} else {
 				if (combo > COMBO_START_GAIN) {
 					stackBounds.y += STACK_BOUNDS_GAIN;
@@ -175,6 +209,9 @@ public class TheStack : MonoBehaviour {
 				}
 				combo++;
 				t.localPosition = new Vector3 (lastTilePosition.x, scoreCount, lastTilePosition.z);
+			
+				// AUDIO SOURCE COMBO
+				starParticle.Emit(1);
 			}
 		}
 
